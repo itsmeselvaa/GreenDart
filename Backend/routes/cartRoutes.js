@@ -191,7 +191,6 @@ router.get("/", async (req, res) => {
 
 router.post("/merge", protect, async (req, res) => {
   const { guestId } = req.body;
-
   const guestCart = await Cart.findOne({ guestId });
   const userCart = await Cart.findOne({ user: req.user._id });
   try {
