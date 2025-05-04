@@ -6,7 +6,7 @@ import { fetchUserOrders } from "../../redux/slice/orderSlice";
 const MyOrderPage = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { orders, loading, error } = useSelector((state) => state.adminOrders);
+  const { orders, loading, error } = useSelector((state) => state.order);
 
   useEffect(() => {
     dispatch(fetchUserOrders());
@@ -24,8 +24,8 @@ const MyOrderPage = () => {
   return (
     <div className="max-w-7xl mx-auto p-4 sm:p-6">
       <h2 className="text-xl sm-text-2xl font-bold mb-6">My Orders</h2>
-      <div className="relative shadow-md sm:rounded-lg overflow-hidded">
-        <table className="min-w-full text-left text-gray-500">
+      <div className="relative shadow-md sm:rounded-lg overflow-x-auto scrollbar-hidden">
+        <table className="min-w-full text-left text-gray-500 ">
           <thead className="bg-gray-100 text-xs uppercase text-gray-700">
             <tr>
               <th scope="col" className="px-4 py-2 sm:py-3">
@@ -56,7 +56,7 @@ const MyOrderPage = () => {
               orders?.map((order) => (
                 <tr
                   key={order?._id}
-                  className="border-b hover:border-gray-50 cursor-pointer"
+                  className="border-b hover:bg-gray-50 cursor-pointer"
                   onClick={() => handleRowClick(order._id)}
                 >
                   <td className="py-2 px-2 sm:py-4 sm:px-4">

@@ -6,6 +6,7 @@ import { loginUser } from "../../redux/slice/authSlice";
 
 import { useDispatch, useSelector } from "react-redux";
 import { mergeCart } from "../../redux/slice/cartSlice";
+import { toast } from "sonner";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -13,13 +14,24 @@ const Login = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const location = useLocation();
-  const { user, guestId, loading } = useSelector((state) => state.auth);
+  const { user, guestId, loading, error } = useSelector((state) => state.auth);
   const { cart } = useSelector((state) => state.cart);
 
   // Get redirect parameter and check if its checkout or something
   const redirect = new URLSearchParams(location.search).get("redirect") || "/";
 
   const ischeckoutRedirect = redirect.includes("checkout");
+
+  useEffect(() => {
+    if (user) {
+      toast.success(`Login Successful`, {
+        duration: 1000,
+      });
+    }
+    if (error) {
+      toast.error(`Enter Correct Email and Password ${error}`);
+    }
+  }, [error, user]);
 
   useEffect(() => {
     if (user) {
@@ -88,6 +100,7 @@ const Login = () => {
               id="password"
             />
           </div>
+
           <button
             type="submit"
             className="w-full bg-black text-white p-2 rounded-lg font-semibold hover:bg-gray-800"
