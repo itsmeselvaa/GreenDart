@@ -29,9 +29,7 @@ const seedData = async () => {
     });
 
     // Assign the default user Id to each product
-
     const userId = createdUser._id;
-
     const sampleProducts = products.map((product) => {
       return { ...product, user: userId };
     });

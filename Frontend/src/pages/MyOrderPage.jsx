@@ -6,7 +6,7 @@ import { fetchUserOrders } from "../../redux/slice/orderSlice";
 const MyOrderPage = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { orders, loading, error } = useSelector((state) => state.order);
+  const { orders, loading, error } = useSelector((state) => state.adminOrders);
 
   useEffect(() => {
     dispatch(fetchUserOrders());
@@ -52,40 +52,40 @@ const MyOrderPage = () => {
             </tr>
           </thead>
           <tbody>
-            {orders.length > 0 ? (
-              orders.map((order) => (
+            {orders?.length > 0 ? (
+              orders?.map((order) => (
                 <tr
-                  key={order._id}
+                  key={order?._id}
                   className="border-b hover:border-gray-50 cursor-pointer"
                   onClick={() => handleRowClick(order._id)}
                 >
                   <td className="py-2 px-2 sm:py-4 sm:px-4">
                     <img
-                      src={order.orderItems[0].image}
-                      alt={order.orderItems[0].name}
+                      src={order?.orderItems[0].image}
+                      alt={order?.orderItems[0].name}
                       className="w-10 h-10 sm:w-12 sm:h-12 object-cover rounded-lg"
                     />
                   </td>
                   <td className="py-2 px-2 sm:py-4 sm:px-4 font-medium text-gray-800">
-                    #{order._id}
+                    #{order?._id}
                   </td>
                   <td className="py-2 px-2 sm:py-4 sm:px-4 ">
-                    {new Date(order.createdAt).toLocaleDateString("en-US", {
+                    {new Date(order?.createdAt).toLocaleDateString("en-US", {
                       year: "numeric",
                       month: "2-digit",
                       day: "2-digit",
                     })}
                     {""}{" "}
-                    {new Date(order.createdAt).toLocaleTimeString("en-US", {
+                    {new Date(order?.createdAt).toLocaleTimeString("en-US", {
                       hour: "2-digit",
                       minute: "2-digit",
                     })}
                   </td>
                   <td className="py-2 px-2 sm:py-4 sm:px-4 ">
-                    {order.shippingAddress.address
-                      ? `${order.shippingAddress.address},
-                    ${order.shippingAddress.city}, ${order.shippingAddress.country}
-                    ${order.shippingAddress.postalCode}`
+                    {order?.shippingAddress?.address
+                      ? `${order?.shippingAddress.address},
+                    ${order?.shippingAddress.city}, ${order?.shippingAddress.country}
+                    ${order?.shippingAddress.postalCode}`
                       : "N/A"}
                   </td>
                   <td className="py-2 px-2 sm:py-4 sm:px-4 text-center ">
