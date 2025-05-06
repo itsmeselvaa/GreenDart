@@ -167,7 +167,9 @@ router.get("/", async (req, res) => {
       category,
       material,
       brand,
-      limit,
+      page = 1,
+      limit = 20,
+      size = 20,
     } = req.query;
 
     let query = {};
@@ -235,12 +237,23 @@ router.get("/", async (req, res) => {
       }
     }
 
+    // Pagination
+    const sizeNum = parseInt(size) || 20;
+    const skip = (parseInt(page) - 1) * sizeNum;
+
     // Fetch products
     const products = await Product.find(query)
       .sort(sort)
+      .skip(skip)
       .limit(Number(limit) || 0);
 
-    res.json(products);
+    const total = await Product.countDocuments(query);
+    res.json({
+      products,
+      total,
+      currentPage: parseInt(page),
+      totalPages: Math.ceil(total / limit),
+    });
   } catch (error) {
     console.error("🔴 Error fetching products:", error);
     res.status(500).json({ message: "Server Error", error: error.message });

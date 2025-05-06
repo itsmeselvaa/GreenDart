@@ -119,6 +119,7 @@ router.post("/login", async (req, res) => {
 // desc Get logged-in user's Profile (Protected Route)
 // @access private
 
+
 router.get("/profile", protect, async (req, res) => {
   res.json(req.user);
 });

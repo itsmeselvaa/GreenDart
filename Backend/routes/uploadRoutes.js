@@ -16,7 +16,6 @@ cloudinary.config({
 });
 
 // Multer setup using memory Storage
-
 const storage = multer.memoryStorage();
 const upload = multer({ storage });
 
