@@ -22,6 +22,7 @@ import OrderManagement from "./components/Admin/OrderManagement";
 import { Provider } from "react-redux";
 import store from "../redux/store";
 import ProtectedRoute from "./components/Common/ProtectedRoute";
+import Courosel from "./pages/Courosel";
 
 const App = () => {
   return (
@@ -60,6 +61,8 @@ const App = () => {
             <Route path="products/:id/edit" element={<EditProductPage />} />
             <Route path="orders" element={<OrderManagement />} />
           </Route>
+
+          <Route path="*" element={<p>Page not found</p>} />
         </Routes>
       </BrowserRouter>
     </Provider>

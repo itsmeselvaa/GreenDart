@@ -230,6 +230,7 @@ const NewArrivals = () => {
           </div>
         ))}
       </div>
+      
     </section>
   );
 };

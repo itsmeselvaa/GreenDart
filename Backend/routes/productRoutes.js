@@ -167,9 +167,9 @@ router.get("/", async (req, res) => {
       category,
       material,
       brand,
-      page = 1,
-      limit = 20,
-      size = 20,
+      page,
+      limit,
+      size,
     } = req.query;
 
     let query = {};
@@ -238,21 +238,22 @@ router.get("/", async (req, res) => {
     }
 
     // Pagination
-    const sizeNum = parseInt(size) || 20;
+    const sizeNum = parseInt(size) || 10;
+    const limitNum = parseInt(limit) ? parseInt(limit) : sizeNum;
     const skip = (parseInt(page) - 1) * sizeNum;
 
     // Fetch products
     const products = await Product.find(query)
       .sort(sort)
       .skip(skip)
-      .limit(Number(limit) || 0);
+      .limit(Number(limitNum) || 0);
 
     const total = await Product.countDocuments(query);
     res.json({
       products,
-      total,
+      totalProducts: total,
       currentPage: parseInt(page),
-      totalPages: Math.ceil(total / limit),
+      totalPages: Math.ceil(total / limitNum),
     });
   } catch (error) {
     console.error("🔴 Error fetching products:", error);

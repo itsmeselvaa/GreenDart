@@ -9,6 +9,7 @@ import {
 } from "../../../redux/slice/productSlice";
 import { addToCart } from "../../../redux/slice/cartSlice";
 import { useParams } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 
 // const selectedProduct = {
 //   name: "Stylish Jacket",
@@ -91,6 +92,15 @@ const ProductDetails = ({ productId }) => {
   const { user, guestId } = useSelector((state) => state.auth);
 
   const productFetchId = productId ? productId : id;
+
+  const location = useLocation();
+
+  useEffect(() => {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
+  }, [location.pathname]);
 
   useEffect(() => {
     if (productFetchId) {

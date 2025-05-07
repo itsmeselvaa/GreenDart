@@ -215,7 +215,7 @@ const FilterSideBar = () => {
       <div className="mb-6">
         <label className="block text-gray-600 font-medium mb-2">Size</label>
         {sizes.map((size) => (
-          <div className="flex items-center mb-1" key={size}>
+          <div className="flex items-center space-x-2 mb-1" key={size}>
             <input
               type="checkbox"
               name="size"
@@ -233,7 +233,7 @@ const FilterSideBar = () => {
       <div className="mb-6">
         <label className="block text-gray-600 font-medium mb-2">Brand</label>
         {brands.map((brand) => (
-          <div className="flex items-center mb-1" key={brand}>
+          <div className="flex items-center space-x-2  mb-1" key={brand}>
             <input
               type="checkbox"
               name="brand"
@@ -251,7 +251,7 @@ const FilterSideBar = () => {
       <div className="mb-6">
         <label className="block text-gray-600 font-medium mb-2">Material</label>
         {materials.map((material) => (
-          <div className="flex items-center mb-1" key={material}>
+          <div className="flex items-center space-x-2  mb-1" key={material}>
             <input
               type="checkbox"
               name="material"

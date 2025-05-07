@@ -1,167 +1,145 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef, useCallback } from "react";
 import { useState } from "react";
 import { FaFilter } from "react-icons/fa";
-import FilterSideBar from "../components/Products/FilterSideBar";
-import { useRef } from "react";
-import SortOption from "../components/Products/SortOption";
-import ProductGrid from "../components/Products/ProductGrid";
 import { useParams, useSearchParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchProductsByFilters } from "../../redux/slice/productSlice";
 
+import FilterSideBar from "../components/Products/FilterSideBar";
+import SortOption from "../components/Products/SortOption";
+import ProductGrid from "../components/Products/ProductGrid";
+
 const CollectionPage = () => {
   const { collection } = useParams();
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const dispatch = useDispatch();
-  const { products, loading, error } = useSelector((state) => state.products);
-  const queryParams = Object.fromEntries([...searchParams]);
+  const { products, loading, error, totalPages } = useSelector(
+    (state) => state.products
+  );
+
   const sideBarRef = useRef(null);
+  const filterRef = useRef(null);
   const [isSideBarOpen, setIsSideBarOpen] = useState(false);
 
+  const page = parseInt(searchParams.get("page")) || 1;
+
+  const queryParams = Object.fromEntries([...searchParams.entries()]);
+
+  // Dispatch product fetch on param change
   useEffect(() => {
-    console.log(queryParams);
     dispatch(fetchProductsByFilters({ collection, ...queryParams }));
   }, [dispatch, collection, searchParams]);
 
-  const handleSideBarToggle = () => {
-    setIsSideBarOpen(!isSideBarOpen);
-  };
-
-  const handleOutsideClick = (event) => {
-    if (sideBarRef.current && !sideBarRef.current.contains(event.target)) {
-      setIsSideBarOpen(false);
-    }
-  };
-
+  // Close sidebar on outside click
   useEffect(() => {
-    document.addEventListener("mousedown", handleOutsideClick);
-    return () => {
-      document.removeEventListener("mousedown", handleOutsideClick);
+    const handleClickOutside = (event) => {
+      if (
+        sideBarRef.current &&
+        filterRef.current &&
+        !sideBarRef.current.contains(event.target) &&
+        !filterRef.current.contains(event.target)
+      ) {
+        setIsSideBarOpen(false);
+      }
     };
-  });
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
-  // useEffect(() => {
-  //   setTimeout(() => {
-  //     const mockProducts = [
-  //       {
-  //         _id: "1",
-  //         name: "Stylish Jacket",
-  //         price: 120,
-  //         image: [
-  //           {
-  //             url: "https://picsum.photos/200/300?random=1",
-  //             alt: "Stylish Jacket",
-  //           },
-  //         ],
-  //       },
-  //       {
-  //         _id: "2",
-  //         name: "Stylish Jacket",
-  //         price: 120,
-  //         image: [
-  //           {
-  //             url: "https://picsum.photos/200/300?random=2",
-  //             alt: "Stylish Jacket",
-  //           },
-  //         ],
-  //       },
-  //       {
-  //         _id: "3",
-  //         name: "Stylish Jacket",
-  //         price: 120,
-  //         image: [
-  //           {
-  //             url: "https://picsum.photos/200/300?random=3",
-  //             alt: "Stylish Jacket",
-  //           },
-  //         ],
-  //       },
-  //       {
-  //         _id: "4",
-  //         name: "Stylish Jacket",
-  //         price: 120,
-  //         image: [
-  //           {
-  //             url: "https://picsum.photos/200/300?random=4",
-  //             alt: "Stylish Jacket",
-  //           },
-  //         ],
-  //       },
-  //       {
-  //         _id: "5",
-  //         name: "Stylish Jacket",
-  //         price: 120,
-  //         image: [
-  //           {
-  //             url: "https://picsum.photos/200/300?random=5",
-  //             alt: "Stylish Jacket",
-  //           },
-  //         ],
-  //       },
-  //       {
-  //         _id: "6",
-  //         name: "Stylish Jacket",
-  //         price: 120,
-  //         image: [
-  //           {
-  //             url: "https://picsum.photos/200/300?random=6",
-  //             alt: "Stylish Jacket",
-  //           },
-  //         ],
-  //       },
-  //       {
-  //         _id: "7",
-  //         name: "Stylish Jacket",
-  //         price: 120,
-  //         image: [
-  //           {
-  //             url: "https://picsum.photos/200/300?random=7",
-  //             alt: "Stylish Jacket",
-  //           },
-  //         ],
-  //       },
-  //       {
-  //         _id: "8",
-  //         name: "Stylish Jacket",
-  //         price: 120,
-  //         image: [
-  //           {
-  //             url: "https://picsum.photos/200/300?random=8",
-  //             alt: "Stylish Jacket",
-  //           },
-  //         ],
-  //       },
-  //     ];
-  //     setProdcuts(mockProducts);
-  //   }, 1000);
-  // }, []);
+  // Prevent scroll when nav drawer is open
+  useEffect(() => {
+    document.body.style.overflow = isSideBarOpen ? "hidden" : "auto";
+    return () => {
+      document.body.style.overflow = "auto";
+    };
+  }, [isSideBarOpen]);
+
+  // Pagination update
+  const updatePageParam = useCallback(
+    (newPage) => {
+      const updatedParams = new URLSearchParams(queryParams);
+      updatedParams.set("page", newPage);
+      setSearchParams(updatedParams);
+    },
+    [queryParams, setSearchParams]
+  );
+
   return (
-    <div className="flex flex-col lg:flex-row">
-      {/* Mobile Filter Button */}
-      <button
-        className="lg:hidden border p-2 flex justify-center items-center"
-        onClick={handleSideBarToggle}
-      >
-        <FaFilter className="mr-2" />
-      </button>
-      {/* filter sideBar */}
-      <div
-        ref={sideBarRef}
-        className={`${
-          isSideBarOpen ? "translate-x-0" : "-translate-x-full"
-        } fixed z-50 top-0 left-0 w-64 h-full bg-white overflow-y-auto transition-transform duration-300 lg:static lg:translate-x-0  inset-y-0 scrollbar-hidden `}
-      >
-        <FilterSideBar />
+    <>
+      <div className="flex flex-col lg:flex-row mb-20">
+        {/* Mobile Filter Toggle */}
+        <button
+          ref={filterRef}
+          className="lg:hidden border-y  px-2 py-1 flex items-center justify-center mt-5"
+          onClick={() => setIsSideBarOpen(!isSideBarOpen)}
+        >
+          <FaFilter className="mr-2" />
+          Filter
+        </button>
+
+        {/* Sidebar */}
+        <div
+          ref={sideBarRef}
+          className={`${
+            isSideBarOpen ? "translate-x-0" : "-translate-x-full"
+          } fixed z-30 top-25 left-0 w-80 h-full bg-white transition-transform  pb-20 duration-300 lg:static lg:translate-x-0 overflow-y-auto scrollbar-hidden `}
+        >
+          <FilterSideBar />
+        </div>
+
+        {/* Main Content */}
+        <div className="flex-grow p-4 ">
+          <div className="flex items-center justify-between px-4">
+            <h2 className="text-2xl ">All Collections</h2>
+            <SortOption />
+          </div>
+          <ProductGrid products={products} loading={loading} error={error} />
+        </div>
       </div>
-      {/* Products Section */}
-      <div className="flex-grow p-4 mb-10">
-        <h2 className="text-2xl mb-4 ">All Collections</h2>
-        {/* Sort Option */}
-        <SortOption />
-        {/* Product Grid */}
-        <ProductGrid products={products} loading={loading} error={error} />
-      </div>
-    </div>
+
+      {/* Pagination */}
+      {totalPages > 1 && (
+        <div className="my-5  justify-center items-center space-x-2 hidden lg:flex">
+          <button
+            onClick={() => updatePageParam(page - 1)}
+            disabled={page <= 1}
+            className={`px-3 py-1 rounded-md ${
+              page <= 1
+                ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+                : "bg-gray-200 text-black hover:bg-gray-300"
+            }`}
+          >
+            Prev
+          </button>
+
+          {Array.from({ length: totalPages }, (_, index) => (
+            <button
+              key={index}
+              className={`px-3 py-1 rounded-md ${
+                page === index + 1
+                  ? "bg-blue-500 text-white"
+                  : "bg-gray-300 text-black"
+              }`}
+              onClick={() => updatePageParam(index + 1)}
+            >
+              {index + 1}
+            </button>
+          ))}
+
+          <button
+            onClick={() => updatePageParam(page + 1)}
+            disabled={page >= totalPages}
+            className={`px-3 py-1 rounded-md ${
+              page >= totalPages
+                ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+                : "bg-gray-200 text-black hover:bg-gray-300"
+            }`}
+          >
+            Next
+          </button>
+        </div>
+      )}
+    </>
   );
 };
 
